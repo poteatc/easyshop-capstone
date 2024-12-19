@@ -63,6 +63,7 @@ public class MySqlShoppingCartDao extends MySqlDaoBase implements ShoppingCartDa
         return shoppingCart;
     }
 
+    // TODO: Update the product quantity in cart if user already has it
     @Override
     public Product addProductById(int userId, int productId) {
         String sql = """

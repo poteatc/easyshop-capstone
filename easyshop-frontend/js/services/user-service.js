@@ -140,6 +140,9 @@ class UserService {
         this.setHeaderLogin();
 
         productService.enableButtons();
+
+         // Redirect to the home page when user logs out
+         window.location.href = '/easyshop-frontend/index.html';
     }
 
 }

@@ -37,20 +37,41 @@ public class CategoriesController
     public List<Category> getAll()
     {
         // find and return all categories
-        return categoryDao.getAllCategories();
+        try
+        {
+            List<Category> categories = categoryDao.getAllCategories();
+
+            if(categories.isEmpty()) {
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+            }
+            return categories;
+        }
+        catch(Exception ex)
+        {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Oops... our bad.");
+        }
+        //return categoryDao.getAllCategories();
     }
 
     // add the appropriate annotation for a get action
     @GetMapping("/{id}")
-    @ResponseStatus(HttpStatus.OK)
+    //@ResponseStatus(HttpStatus.OK)
     public Category getById(@PathVariable int id)
     {
         // get the category by id
-        Category category = categoryDao.getById(id);
-        if (category == null) {
-            throw new ResourceNotFoundException("Category not found with ID: " + id);
+        try
+        {
+            Category category = categoryDao.getById(id);
+
+            if(category == null) {
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+            }
+            return category;
         }
-        return category;
+        catch(Exception ex)
+        {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Oops... our bad.");
+        }
     }
 
     // the url to return all products in category 1 would look like this
@@ -59,7 +80,20 @@ public class CategoriesController
     public List<Product> getProductsById(@PathVariable int categoryId)
     {
         // get a list of product by categoryId
-        return productDao.listByCategoryId(categoryId);
+        try
+        {
+            List<Product> products = productDao.listByCategoryId(categoryId);
+
+            if(products.isEmpty()) {
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+            }
+            return products;
+        }
+        catch(Exception ex)
+        {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Oops... our bad.");
+        }
+        //return productDao.listByCategoryId(categoryId);
     }
 
     // add annotation to call this method for a POST action
@@ -79,7 +113,13 @@ public class CategoriesController
     public void updateCategory(@PathVariable int id, @RequestBody Category category)
     {
         // update the category by id
-        categoryDao.update(id, category);
+        try {
+            categoryDao.update(id, category);
+        }
+        catch(Exception ex)
+        {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Oops... our bad.");
+        }
     }
 
 
@@ -87,19 +127,31 @@ public class CategoriesController
     @DeleteMapping("/{id}")
     // add annotation to ensure that only an ADMIN can call this function
     @PreAuthorize("hasRole('ADMIN')")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
+    //@ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteCategory(@PathVariable int id)
     {
         // delete the category by id
-        categoryDao.delete(id);
+        try
+        {
+            Category category = categoryDao.getById(id);
+
+            if(category == null) {
+                throw new ResponseStatusException(HttpStatus.NO_CONTENT);
+            }
+            categoryDao.delete(id);
+        }
+        catch(Exception ex)
+        {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Oops... our bad.");
+        }
     }
 }
 
 
 // TODO : Put in own class and Exceptions package
-@ResponseStatus(HttpStatus.NOT_FOUND)
-class ResourceNotFoundException extends RuntimeException {
-    public ResourceNotFoundException(String message) {
-        super(message);
-    }
-}
+//@ResponseStatus(HttpStatus.NOT_FOUND)
+//class ResourceNotFoundException extends RuntimeException {
+//    public ResourceNotFoundException(String message) {
+//        super(message);
+//    }
+//}

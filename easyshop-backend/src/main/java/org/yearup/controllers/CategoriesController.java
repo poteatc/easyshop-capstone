@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 import org.yearup.data.CategoryDao;
 import org.yearup.data.ProductDao;
 import org.yearup.models.Category;
@@ -41,10 +42,15 @@ public class CategoriesController
 
     // add the appropriate annotation for a get action
     @GetMapping("/{id}")
+    @ResponseStatus(HttpStatus.OK)
     public Category getById(@PathVariable int id)
     {
         // get the category by id
-        return categoryDao.getById(id);
+        Category category = categoryDao.getById(id);
+        if (category == null) {
+            throw new ResourceNotFoundException("Category not found with ID: " + id);
+        }
+        return category;
     }
 
     // the url to return all products in category 1 would look like this
@@ -86,5 +92,14 @@ public class CategoriesController
     {
         // delete the category by id
         categoryDao.delete(id);
+    }
+}
+
+
+// TODO : Put in own class and Exceptions package
+@ResponseStatus(HttpStatus.NOT_FOUND)
+class ResourceNotFoundException extends RuntimeException {
+    public ResourceNotFoundException(String message) {
+        super(message);
     }
 }

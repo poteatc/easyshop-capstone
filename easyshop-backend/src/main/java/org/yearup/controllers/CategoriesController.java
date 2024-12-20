@@ -100,6 +100,7 @@ public class CategoriesController
     // add annotation to ensure that only an ADMIN can call this function
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
+    @ResponseStatus(HttpStatus.CREATED) // Sets the HTTP status to 201
     public Category addCategory(@RequestBody Category category)
     {
         // insert the category

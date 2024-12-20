@@ -21,13 +21,13 @@ public class MySqlShoppingCartDao extends MySqlDaoBase implements ShoppingCartDa
     @Override
     public ShoppingCart getByUserId(int userId) {
         String sql = """
-        SELECT sc.product_id, sc.quantity, 
-               p.name, p.price, p.category_id, p.description, 
-               p.color, p.image_url, p.stock, p.featured
-        FROM shopping_cart sc
-        JOIN products p ON sc.product_id = p.product_id
-        WHERE sc.user_id = ?
-    """;
+                    SELECT sc.product_id, sc.quantity, 
+                           p.name, p.price, p.category_id, p.description, 
+                           p.color, p.image_url, p.stock, p.featured
+                    FROM shopping_cart sc
+                    JOIN products p ON sc.product_id = p.product_id
+                    WHERE sc.user_id = ?
+                """;
 
         ShoppingCart shoppingCart = new ShoppingCart();
 
@@ -66,20 +66,90 @@ public class MySqlShoppingCartDao extends MySqlDaoBase implements ShoppingCartDa
     // TODO: Update the product quantity in cart if user already has it
     @Override
     public Product addProductById(int userId, int productId) {
-        String sql = """
+//        String sql = """
+//                INSERT INTO shopping_cart (user_id, product_id, quantity)
+//                VALUES (?, ?, 1)
+//                """;
+//        try (Connection connection = getConnection()) {
+//            PreparedStatement statement = connection.prepareStatement(sql);
+//            statement.setInt(1, userId);
+//            statement.setInt(2, productId);
+//
+//            int rows = statement.executeUpdate();
+//            System.out.println(rows + " rows added");
+//        } catch (SQLException e) {
+//            throw new RuntimeException(e);
+//        }
+        String checkSql = """
+                SELECT quantity FROM shopping_cart WHERE user_id = ? AND product_id = ?
+                """;
+        String insertSql = """
                 INSERT INTO shopping_cart (user_id, product_id, quantity)
                 VALUES (?, ?, 1)
                 """;
-        try (Connection connection = getConnection()) {
-            PreparedStatement statement = connection.prepareStatement(sql);
-            statement.setInt(1, userId);
-            statement.setInt(2, productId);
+        String updateSql = """
+                UPDATE shopping_cart SET quantity = quantity + 1 WHERE user_id = ? AND product_id = ?
+                """;
 
-            int rows = statement.executeUpdate();
-            System.out.println(rows + " rows added");
+        try (Connection connection = getConnection()) {
+            // Check if the product is already in the cart
+            PreparedStatement checkStatement = connection.prepareStatement(checkSql);
+            checkStatement.setInt(1, userId);
+            checkStatement.setInt(2, productId);
+
+            ResultSet resultSet = checkStatement.executeQuery();
+            if (resultSet.next()) {
+                // Product exists in cart, update the quantity
+                PreparedStatement updateStatement = connection.prepareStatement(updateSql);
+                updateStatement.setInt(1, userId);
+                updateStatement.setInt(2, productId);
+                int rows = updateStatement.executeUpdate();
+                System.out.println(rows + " rows updated");
+            } else {
+                // Product does not exist, insert a new record
+                PreparedStatement insertStatement = connection.prepareStatement(insertSql);
+                insertStatement.setInt(1, userId);
+                insertStatement.setInt(2, productId);
+                int rows = insertStatement.executeUpdate();
+                System.out.println(rows + " rows inserted");
+            }
+            return null;
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-        return null;
     }
+
+    public boolean updateProductQuantity(int userId, int productId, int newQuantity) {
+        String sql = """
+            UPDATE shopping_cart
+            SET quantity = ?
+            WHERE user_id = ? AND product_id = ?
+            """;
+        try (Connection connection = getConnection()) {
+            PreparedStatement statement = connection.prepareStatement(sql);
+            statement.setInt(1, newQuantity);
+            statement.setInt(2, userId);
+            statement.setInt(3, productId);
+
+            int rowsAffected = statement.executeUpdate();
+            return rowsAffected > 0;  // Return true if the product was updated
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void clearCart(int userId) {
+        String sql = """
+            DELETE FROM shopping_cart
+            WHERE user_id = ?
+            """;
+        try (Connection connection = getConnection()) {
+            PreparedStatement statement = connection.prepareStatement(sql);
+            statement.setInt(1, userId);
+            statement.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
 }

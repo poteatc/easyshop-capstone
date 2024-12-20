@@ -55,7 +55,7 @@ public class CategoriesController
     }
 
     // add the appropriate annotation for a get action
-    // Get By ID //
+    // Get by id
     @RequestMapping(path = "/{id}")
     @PreAuthorize("permitAll()")
     public ResponseEntity<Category> getById(@PathVariable int id)

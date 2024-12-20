@@ -274,5 +274,70 @@ The frontend of the application is a simple, functional website that allows user
 - Caused sliders on frontend to filter incorrectly.. the SQL query and PreparedStatement was only checking for one parameter called price instead of two: minPrice and maxPrice.
 
 ---
+
 ## Interesting Code
+![image](https://github.com/user-attachments/assets/e497bcda-aa8c-4dde-97b9-fc378df815b4)
+
+# Spring Annotations for REST Controller Example
+
+This section explains how Spring uses annotations for controller classes to map endpoints in a RESTful API. The following code demonstrates several key Spring annotations and their roles in creating a controller class for handling HTTP requests.
+
+## Code Explanation
+
+### 1. `@RestController` Annotation
+
+- **Purpose**: The `@RestController` annotation is a combination of two annotations: `@Controller` and `@ResponseBody`. 
+- **Why It's Interesting**: 
+  - It tells Spring that this class will serve as a RESTful controller. 
+  - Methods within the class will handle HTTP requests and automatically return data (usually in JSON or XML format).
+  - There is no need to explicitly mark each method with `@ResponseBody`, simplifying the development of REST APIs.
+- **How it Works**: 
+  - The `@RestController` annotation marks the class as a controller that automatically serializes Java objects to JSON (or other formats) and returns them in the HTTP response.
+
+### 2. `@CrossOrigin` Annotation
+
+- **Purpose**: The `@CrossOrigin` annotation is used to handle Cross-Origin Resource Sharing (CORS) in Spring applications.
+- **Why It's Interesting**: 
+  - This annotation allows cross-origin HTTP requests from specific domains to access resources on the backend server.
+  - It's useful when the frontend and backend are hosted on different domains or ports.
+- **How it Works**: 
+  - The annotation allows requests from different origins to interact with the API. In this case, it is applied at the controller level, meaning all endpoints under `/categories` will allow cross-origin requests.
+
+### 3. `@RequestMapping` Annotation
+
+- **Purpose**: The `@RequestMapping` annotation maps HTTP requests to specific handler methods.
+- **Why It's Interesting**: 
+  - In this case, `@RequestMapping("/categories")` maps all HTTP requests that start with `/categories` to the `CategoriesController` class.
+- **How it Works**: 
+  - This annotation groups related endpoints together under a common base path (`/categories`). 
+  - Spring will route requests with matching URLs to the controller methods.
+
+### 4. The `@Autowired` Constructor
+
+- **Purpose**: The `@Autowired` annotation is used to inject dependencies into a class.
+- **Why It's Interesting**: 
+  - It allows Spring to automatically provide the required instances of `CategoryDao` and `ProductDao` into the `CategoriesController` constructor.
+  - This is an example of Spring's dependency injection (DI), promoting loose coupling and making the code more maintainable.
+- **How it Works**: 
+  - Spring automatically looks for available beans in the application context and injects them into the class constructor when the controller is instantiated.
+
+### 5. `@GetMapping` Annotation
+
+- **Purpose**: The `@GetMapping` annotation is a specialized version of `@RequestMapping` that handles HTTP GET requests.
+- **Why It's Interesting**: 
+  - It is used to map HTTP GET requests to specific methods. Here, the `getAll()` method is mapped to the `/categories` endpoint for GET requests.
+- **How it Works**: 
+  - The `@GetMapping` annotation simplifies the mapping of GET requests to a handler method. It is a more concise and expressive alternative to `@RequestMapping(method = RequestMethod.GET)`.
+
+### 6. Exception Handling with `ResponseStatusException`
+
+- **Purpose**: The `ResponseStatusException` class is used to throw exceptions that automatically map to HTTP responses with a specified status code.
+- **Why It's Interesting**: 
+  - It provides a way to return meaningful HTTP status codes and error messages when an error occurs.
+  - This is useful for building APIs with proper error handling, improving the client experience.
+- **How it Works**: 
+  - In the `getAll()` method, if no categories are found, a 404 (Not Found) response is thrown. 
+  - If an exception occurs, a 500 (Internal Server Error) response is thrown with a custom error message.
+
+
 

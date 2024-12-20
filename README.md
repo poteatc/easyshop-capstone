@@ -15,6 +15,8 @@ This application is a Spring-based e-commerce platform that allows users to inte
 4. [BasicDataSource Configuration](#basicdatasource-configuration)
 5. [JWT Bearer Authentication](#jwt-bearer-authentication)
 6. [Frontend Overview](#frontend-overview)
+7. [Errors](#errors)
+8. [Interesting Code](#interesting-code)
 
 ---
 
@@ -260,6 +262,8 @@ The frontend of the application is a simple, functional website that allows user
 > ![image](https://github.com/user-attachments/assets/3733c883-ecd4-4cd6-9e00-97cd322386e1)
 
 
+--- 
+
 ## Errors
 ![image](https://github.com/user-attachments/assets/17618a90-3d13-423f-bd61-c16349073ec9)
 
@@ -268,4 +272,7 @@ The frontend of the application is a simple, functional website that allows user
 ![image](https://github.com/user-attachments/assets/6b14e4b6-1cd4-44b3-88e6-da64411ed41c)
 
 - Caused sliders on frontend to filter incorrectly.. the SQL query and PreparedStatement was only checking for one parameter called price instead of two: minPrice and maxPrice.
+
+---
+## Interesting Code
 
